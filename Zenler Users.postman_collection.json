@@ -1,0 +1,404 @@
+{
+	"info": {
+		"_postman_id": "e756ee77-b562-45a4-a24e-103766a57f92",
+		"name": "Zenler Users",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19328607",
+		"_collection_link": "https://www.postman.com/universal-comet-137010/workspace/automation-testing/collection/19328607-e756ee77-b562-45a4-a24e-103766a57f92?action=share&source=collection_link&creator=19328607"
+	},
+	"item": [
+		{
+			"name": "Get User List",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-API-Key",
+						"value": "WAXRZCYCXUSVXLL5KF2RDUO3IMHLDCML",
+						"type": "text"
+					},
+					{
+						"key": "X-Account-Name",
+						"value": "Sdet",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://api.newzenler.com/api/v1/users?limit=&page=&orderby=&order=&search=&role[]=3&role[]=4",
+					"protocol": "https",
+					"host": [
+						"api",
+						"newzenler",
+						"com"
+					],
+					"path": [
+						"api",
+						"v1",
+						"users"
+					],
+					"query": [
+						{
+							"key": "limit",
+							"value": ""
+						},
+						{
+							"key": "page",
+							"value": ""
+						},
+						{
+							"key": "orderby",
+							"value": ""
+						},
+						{
+							"key": "order",
+							"value": ""
+						},
+						{
+							"key": "search",
+							"value": ""
+						},
+						{
+							"key": "role[]",
+							"value": "3"
+						},
+						{
+							"key": "role[]",
+							"value": "4"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonData = pm.response.json();\r",
+							"pm.test(\"Validate Status code is 201\",function()\r",
+							"{\r",
+							"pm.response.to.have.status(201);\r",
+							"});\r",
+							"function cleanupScript()\r",
+							"{\r",
+							"    pm.collectionVariables.set(\"flag\",true);\r",
+							"    postman.setNextRequest(\"Delete User\");\r",
+							"}\r",
+							"    pm.test(\"Validate response message\",function()\r",
+							"{\r",
+							"    try{\r",
+							"        pm.expect(jsonData).have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.eql(\"People added successfully\");\r",
+							"    }\r",
+							"    catch(err)\r",
+							"    {\r",
+							"       if(jsonData.msg.includes(\"exists\"))\r",
+							"        {\r",
+							"            cleanupScript();\r",
+							"        } \r",
+							"    }\r",
+							"   \r",
+							"});\r",
+							"const userId=jsonData.data.id;\r",
+							"pm.environment.set(\"user_id\",userId);\r",
+							"pm.test(\"responsetime validation\",function()\r",
+							"{\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(1200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-API-Key",
+						"value": "WAXRZCYCXUSVXLL5KF2RDUO3IMHLDCML",
+						"type": "text"
+					},
+					{
+						"key": "X-Account-Name",
+						"value": "Sdet",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"first_name\":\"Jhon\",\r\n    \"last_name\":\"Cena\",\r\n    \"email\":\"jhoncena{{$randomInt}}@gmail.com\",\r\n    \"password\":\"Jhon@123\",\r\n    \"commission\":\"10\",\r\n    \"roles\":[7]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://api.newzenler.com/api/v1/users",
+					"protocol": "https",
+					"host": [
+						"api",
+						"newzenler",
+						"com"
+					],
+					"path": [
+						"api",
+						"v1",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const getUserResponse = pm.response.json();\r",
+							"const schema = {\r",
+							"    \"type\": \"object\",\r",
+							"  \"properties\": {\r",
+							"    \"response_code\": {\r",
+							"      \"type\": \"number\"\r",
+							"    },\r",
+							"    \"message\": {\r",
+							"      \"type\": \"string\"\r",
+							"    },\r",
+							"    \"data\": {\r",
+							"      \"type\": \"object\",\r",
+							"      \"properties\": {\r",
+							"        \"id\": {\r",
+							"          \"type\": \"string\"\r",
+							"        },\r",
+							"        \"first_name\": {\r",
+							"          \"type\": \"string\"\r",
+							"        },\r",
+							"        \"last_name\": {\r",
+							"          \"type\": \"string\"\r",
+							"        },\r",
+							"        \"email\": {\r",
+							"          \"type\": \"string\"\r",
+							"        },\r",
+							"        \"bio\": {},\r",
+							"        \"address\": {\r",
+							"          \"type\": \"string\"\r",
+							"        },\r",
+							"        \"city\": {\r",
+							"          \"type\": \"string\"\r",
+							"        },\r",
+							"        \"state\": {\r",
+							"          \"type\": \"string\"\r",
+							"        },\r",
+							"        \"zip_code\": {\r",
+							"          \"type\": \"string\"\r",
+							"        },\r",
+							"        \"roles\": {\r",
+							"          \"type\": \"array\",\r",
+							"          \"items\": {\r",
+							"            \"type\": \"number\"\r",
+							"          }\r",
+							"        },\r",
+							"        \"phone\": {\r",
+							"          \"type\": \"string\"\r",
+							"        },\r",
+							"        \"affiliate_commission\": {\r",
+							"          \"type\": \"string\"\r",
+							"        },\r",
+							"        \"affiliate_code\": {\r",
+							"          \"type\": \"string\"\r",
+							"        }\r",
+							"      },\r",
+							"      \"required\": [\r",
+							"        \"id\",\r",
+							"        \"first_name\",\r",
+							"        \"last_name\",\r",
+							"        \"email\",\r",
+							"        \"bio\",\r",
+							"        \"address\",\r",
+							"        \"city\",\r",
+							"        \"state\",\r",
+							"        \"zip_code\",\r",
+							"        \"roles\",\r",
+							"        \"phone\",\r",
+							"        \"affiliate_commission\",\r",
+							"        \"affiliate_code\"\r",
+							"      ]\r",
+							"    }\r",
+							"  },\r",
+							"  \"required\": [\r",
+							"    \"response_code\",\r",
+							"    \"message\",\r",
+							"    \"data\"\r",
+							"  ]\r",
+							"};\r",
+							"pm.test(\"Validate the Json response schema\",function()\r",
+							"{\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.response.to.have.jsonSchema(schema);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-API-Key",
+						"value": "WAXRZCYCXUSVXLL5KF2RDUO3IMHLDCML",
+						"type": "text"
+					},
+					{
+						"key": "X-Account-Name",
+						"value": "Sdet",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://api.newzenler.com/api/v1/users/{{user_id}}",
+					"protocol": "https",
+					"host": [
+						"api",
+						"newzenler",
+						"com"
+					],
+					"path": [
+						"api",
+						"v1",
+						"users",
+						"{{user_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Validate the Json response code\",function()\r",
+							"{\r",
+							"    pm.response.to.have.status(200);\r",
+							"    const jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.data).to.eql(\"User deleted successfully\");\r",
+							"    if(pm.collectionVariables.get(\"flag\"))\r",
+							"    {\r",
+							"        postman.setNextRequest(\"AddBook\");\r",
+							"    }\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "X-API-Key",
+						"value": "WAXRZCYCXUSVXLL5KF2RDUO3IMHLDCML",
+						"type": "text"
+					},
+					{
+						"key": "X-Account-Name",
+						"value": "Sdet",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/ecmascript",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://api.newzenler.com/api/v1/users/{{user_id}}",
+					"protocol": "https",
+					"host": [
+						"api",
+						"newzenler",
+						"com"
+					],
+					"path": [
+						"api",
+						"v1",
+						"users",
+						"{{user_id}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "flag",
+			"value": "false",
+			"type": "string"
+		}
+	]
+}
